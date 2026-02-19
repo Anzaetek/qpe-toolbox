@@ -1,0 +1,30 @@
+name: Documentation
+
+on: [pull_request]
+
+jobs:
+  build-doc:
+    runs-on: ubuntu-slim
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v7
+      with:
+        python-version: "3.13"
+
+    - name: Install the project
+      run: uv sync --locked --only-group={dev,docs}
+
+    # This job does not run the notebooks as it is expensive
+    # it just checks the doc can be constructed
+    # docs/Makefile contains the same steps. We do not use make here to get
+    # well separated steps and cleaner logs.
+    - name: Convert examples
+      run: uv run --no-sync jupytext examples/*py --to ../docs/source/customapi/tutorials//ipynb
+
+    - name: Copy figures to docs
+      run: cp -r examples/figures docs/source/customapi/tutorials
+
+    - name: Build doc
+      run: uv run --no-sync sphinx-build -b html -W docs/source docs/build

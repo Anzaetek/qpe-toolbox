@@ -1,0 +1,59 @@
+# .pre-commit-config.yaml
+# Run code-quality checks before every commit.
+
+repos:
+  # --------------------------------------------------
+  # 1. Ruff — fast linter and formatter
+  # --------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # --------------------------------------------------
+  # 2. uv hooks
+  # --------------------------------------------------
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.10.0
+    hooks:
+      - id: uv-lock
+
+  # --------------------------------------------------
+  # 3. Maintenance hooks (whitespace, yaml, EOF)
+  # --------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+        exclude: ^docs/source/autoapi/
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-toml
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # --------------------------------------------------
+  # 4. Custom hooks
+  # --------------------------------------------------
+  - repo: local
+    hooks:
+      - id: check-math-blocks
+        name: check math blocks fit myst-nb
+        entry: hooks/check_math.sh
+        language: script
+        files: ^examples/.*\.py$
+
+      - id: check-notebook-titles
+        name: check notebooks contains exactly 1 top level title
+        language: system
+        files: ^examples/.*\.py$
+        entry: hooks/check_titles.sh
+
+      - id: format-examples
+        name: format examples as notebooks
+        language: script
+        files: ^examples/.*\.py$
+        entry: hooks/format_notebooks.sh

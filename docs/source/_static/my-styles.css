@@ -1,0 +1,34 @@
+div.cell div.cell_input {
+	padding-left: 0em;
+	padding-right: 0em;
+	border: 1px rgba(127, 127, 127, 0.1) solid;
+	background-color: rgba(127, 127, 127, 0.1);
+	border-left-color: hsl(126, 25%, 45%);
+	border-left-width: medium;
+}
+
+.cell_output .output.text_plain, .cell_output .output.traceback, .cell_output .output.stream {
+	border: 1px solid rgba(127, 127, 127, 0.0);
+    background: rgba(127, 127, 127, 0.0);
+	margin-top: 0em;
+	margin-bottom: 0em;
+	margin-left: 0.5em;
+	box-shadow: none;
+}
+
+.cell_output .output.stderr {
+	border: 1px solid rgba(127, 127, 127, 0.0);
+    background: rgba(127, 127, 127, 0.0);
+	margin-top: 0em;
+	margin-bottom: 0em;
+	margin-left: 0.25em;
+	box-shadow: none;
+    border-left-color: #cc7766;
+    border-left-width: medium;
+}
+
+.cell_output {
+	padding-left: 1em;
+	padding-right: 0em;
+	margin-top: 0em;
+}

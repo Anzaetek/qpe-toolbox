@@ -1,0 +1,16 @@
+__pycache__/
+.coverage
+dist/
+.pytest_cache/
+.ruff_cache/
+.venv/
+
+# notebooks are handled by jupytext
+.ipynb_checkpoints/
+*.ipynb
+jupyter_execute/
+
+# docs are generated. Figures are copied from example
+docs/build
+docs/source/autoapi
+docs/source/customapi/tutorials/figures/
