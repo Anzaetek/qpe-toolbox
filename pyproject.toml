@@ -88,6 +88,30 @@ build-backend = "hatchling.build"
   skip_covered = true
   fail_under = 70
 
+  [tool.docformatter]
+  pre-summary-newline = true
+  close-quotes-on-newline = true
+  wrap-summaries = 0
+  wrap-descriptions = 0
+
+  [tool.numpydoc_validation]
+  checks = [
+      "all",   # report on all checks, except the below
+      "EX01",  # missing examples
+      "SA01",  # missing See also
+      "ES01",  # mussing extended summary
+      "GL08",  # missing docstring (for module docstring)
+      "RT02",  # keep value name when returning 1 value
+  ]
+  # remember to use single quotes for regex in TOML
+  exclude = [  # don't report on objects that match any of these regex
+      '\.__repr__$',
+  ]
+  exclude_files = [ # don't process filepaths that match these regex
+      '^tests/.*',
+      '^examples/.*',
+  ]
+
   [tool.hatch.version]
   path = "src/qpe_toolbox/__init__.py"
 
@@ -114,7 +138,6 @@ build-backend = "hatchling.build"
         "D209",
         "D403",
         "D405",
-        "D413",
         "E",
         "EXE",
         "F",

@@ -83,7 +83,6 @@ def qpe_energy(
 
       where :math:`\\theta` corresponds to the phase of the most probable state.
     - Supports both Trotterized and exact evolution.
-
     """
     E_const, Emax, evolution_time, global_phase = set_search_window(
         hamiltonian, E_target, size_interval
@@ -185,7 +184,6 @@ def qpe_sample(
     - Phase estimation is performed using a Hadamard wall followed by controlled-U operations.
     - IQFT is applied on the phase register to extract probabilities.
     - When ``run_simulation=False``, the function produces a gate list instead of simulating the circuit.
-
     """
     n_phase_bits = initial_circ.N - hamiltonian.n_qubits
     st = time.time()
@@ -291,7 +289,6 @@ def qpe_first_stage(
     -----
     - The phase register size is inferred from ``initial_circ.N - hamiltonian.n_qubits``.
     - Warnings are raised if the Trotter step size exceeds the required evolution time.
-
     """
     # input validation
     if not ((dt is EXACT) or (np.isscalar(dt) and np.isreal(dt) and dt > 0)):
@@ -405,7 +402,6 @@ def set_search_window(hamiltonian, E_target, size_interval):
     -----
     - Evolution time is chosen as ``2 * pi / size_interval`` to map the interval to [0, 2π].
     - ``global_phase`` is added to ensure the phase encoding is centered around the target energy.
-
     """
     if not (size_interval > 0):
         raise ValueError(f"Invalid size_interval: {size_interval}")

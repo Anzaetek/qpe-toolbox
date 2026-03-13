@@ -42,7 +42,8 @@ _gate_parameter_numbers = {
 def one_qubit_layer(
     circ, gate_label, *, param_scaling=1.0, gate_round=None, parametrize=False, rng=None
 ):
-    """Apply a single-body gate layer to all qubits of a ``quimb`` :quimb-api:`Circuit`.
+    """
+    Apply a single-body gate layer to all qubits of a ``quimb`` :quimb-api:`Circuit`.
 
     This function applies the same single-qubit gate to every qubit in the
     circuit at a specified circuit round. If the gate is parametrized,
@@ -71,10 +72,10 @@ def one_qubit_layer(
     rng : :numpy-random:`numpy.random.Generator <generator>`, default ``None``
         Random number generator for gate parameters. If None a new
         Generator is initialized.
+
     Notes
     -----
     - The same set of parameters is used for all qubits in the layer.
-
     """
 
     gate_label = gate_label.upper()
@@ -112,7 +113,8 @@ def two_qubit_nn_layer(
     reverse=False,
     rng=None,
 ):
-    """Apply a nearest-neighbor two-body entangling layer to a ``quimb`` :quimb-api:`Circuit`.
+    """
+    Apply a nearest-neighbor two-body entangling layer to a ``quimb`` :quimb-api:`Circuit`.
 
     This function applies a two-qubit entangling gate between nearest
     neighbors in a brickwork pattern. The starting qubit index determines
@@ -128,7 +130,7 @@ def two_qubit_nn_layer(
         ``0`` or ``1``). Allows for defining even (0) and odd (1) layers.
 
     gate_label : str
-        Label identifying the two-body entangling gate (e.g. ``"CNOT"``)
+        Label identifying the two-body entangling gate (e.g. ``"CNOT"``).
 
     param_scaling : float, default ``1.0``
         Scaling factor for randomly initialized parameters.
@@ -147,12 +149,12 @@ def two_qubit_nn_layer(
     rng : :numpy-random:`numpy.random.Generator <generator>`, default ``None``
         Random number generator for gate parameters. If None a new
         Generator is initialized.
+
     Notes
     -----
     - The same parameters are reused for all entangling gates in the layer.
     - Gates are applied between qubits ``(i, i+1)`` for
       ``i = start, start+2,`` ...
-
     """
 
     gate_label = gate_label.upper()
@@ -193,7 +195,9 @@ def two_qubit_rand_layer(
     parametrize=True,
     reverse=False,
 ):
-    """Apply a random two-body entangling layer to a ``quimb`` :quimb-api:`Circuit`.
+    """
+    Apply a random two-body entangling layer to a ``quimb`` :quimb-api:`Circuit`.
+
     This function applies two-qubit entangling gates between randomly chosen
     qubit pairs. For each qubit, a partner qubit is selected within a given
     range, and the entangling gate is applied with a specified probability.
@@ -237,7 +241,6 @@ def two_qubit_rand_layer(
     - The same parameters are reused for all entangling gates in the layer.
     - Entangling partners are chosen as ``j = i + 1 + Δ``, where
       ``Δ`` is sampled uniformly from ``[0, gate_range)``.
-
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -277,7 +280,8 @@ def generate_brickwall_circuit(
     param_scaling=1.0,
     rng=None,
 ):
-    """Generate a brickwall-structured ``quimb`` :quimb-api:`Circuit`.
+    """
+    Generate a brickwall-structured ``quimb`` :quimb-api:`Circuit`.
 
     This function constructs a quantum circuit composed of alternating
     single-body layers and nearest-neighbor two-body entangling layers
@@ -299,7 +303,6 @@ def generate_brickwall_circuit(
         q5 ──[]───●───────
           <─────────────>
             first layer
-
 
     where::
 
@@ -349,7 +352,6 @@ def generate_brickwall_circuit(
       randomness.
     - The same gate parameters are reused across all gates within a
       given layer.
-
     """
     if one_qubit_gate_label.upper() not in qtn.circuit.ONE_QUBIT_GATES:
         raise ValueError(f"Expected a single-body gate: {one_qubit_gate_label}")
@@ -398,7 +400,8 @@ def generate_rand_circuit(
     param_scaling=1.0,
     rng=None,
 ):
-    """Generate a random entangling ``quimb`` :quimb-api:`Circuit`.
+    """
+    Generate a random entangling ``quimb`` :quimb-api:`Circuit`.
 
     This function constructs a quantum circuit consisting of alternating
     single-body layers and randomly generated two-body entangling layers.
@@ -420,7 +423,6 @@ def generate_rand_circuit(
         q5 ──[]───●───────  v
           <─────────────>
             first layer
-
 
     where::
 
@@ -474,7 +476,6 @@ def generate_rand_circuit(
     Notes
     -----
     - Gate parameters are shared across all gates within the same layer.
-
     """
     if one_qubit_gate_label.upper() not in qtn.circuit.ONE_QUBIT_GATES:
         raise ValueError(f"Expected a single-body gate: {one_qubit_gate_label}")
@@ -513,7 +514,8 @@ def generate_rand_circuit(
 
 
 def ansatz_circuit(n_qubits, depth, *, gate_round=0, param_scaling=1.0, rng=None):
-    """Construct an ansatz circuit of single qubit and entangling layers.
+    """
+    Construct an ansatz circuit of single qubit and entangling layers.
 
     Parameters
     ----------
@@ -533,7 +535,6 @@ def ansatz_circuit(n_qubits, depth, *, gate_round=0, param_scaling=1.0, rng=None
     -------
     :quimb-api:`Circuit`
         Parametrized ansatz circuit.
-
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -584,7 +585,6 @@ def ansatz_circuit_su4(n_qubits, depth, *, gate_round=0, param_scaling=1.0, rng=
     -------
     :quimb-api:`Circuit`
         Parametrized SU(4) ansatz circuit.
-
     """
     if rng is None:
         rng = np.random.default_rng()
@@ -628,7 +628,6 @@ def ansatz_circuit_sym(n_qubits, depth, *, gate_round=0, param_scaling=1.0, rng=
     -------
     :quimb-api:`Circuit`
         Parametrized U(1)-symmetric ansatz circuit.
-
     """
     if rng is None:
         rng = np.random.default_rng()

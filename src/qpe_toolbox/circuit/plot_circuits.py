@@ -18,8 +18,8 @@ _text_kwargs = {"color": "k", "ha": "center", "va": "center"}
 
 
 def assign_sublayers_per_round(circ, gate_round):
-    """Assign non-overlapping two-qubit gates of a given circuit round
-    to sublayers for plotting purposes.
+    """
+    Assign non-overlapping two-qubit gates of a given circuit round to sublayers for plotting.
 
     This function groups all two-qubit gates acting in a given entangling layer (``gate_round``)
     into sublayers, such that no two gates within the same sublayer act on overlapping
@@ -65,7 +65,6 @@ def assign_sublayers_per_round(circ, gate_round):
     - The algorithm is greedy and does not guarantee a minimum number of
       sublayers, but is sufficient for circuit plotting.
     - This function assumes that the full circuit is being plotted.
-
     """
     # Get the list of gates as intervals - (start, end) - of the two-body gates within the layer 'round'
     list_gates = []
@@ -102,8 +101,8 @@ def assign_sublayers_per_round(circ, gate_round):
 
 
 def assign_sublayers(circ):
-    """Assign non-overlapping two-qubit gates of a given circuit
-    to sublayers at all depths for plotting purposes. See :func:`assign_sublayers_per_round`.
+    """
+    Assign non-overlapping two-qubit gates to sublayers across all circuit depths.
 
     Parameters
     ----------
@@ -128,7 +127,6 @@ def assign_sublayers(circ):
         ``gates`` is a list of two-qubit edges ``(i, j)``.
         The overall structure is ``list[list[tuple[int, list[tuple[int, int]]]]]``,
         corresponding to ``list_layers[list_sublayers[tuple[sublayer_edge, list[tuple[qubit1,qubit2]]]]]``.
-
     """
     depth = max(gate.round for gate in circ.gates) + 1
     list_sublayers = []
@@ -145,7 +143,8 @@ def assign_sublayers(circ):
 
 
 def _add_square(ax, x, y, col_face):
-    """Add a filled square patch to a Matplotlib Axes.
+    """
+    Add a filled square patch to a Matplotlib Axes.
 
     The square is drawn as a rotated ``RegularPolygon`` with four vertices,
     centered at the specified coordinates.
@@ -156,10 +155,10 @@ def _add_square(ax, x, y, col_face):
         Axes object to which the square patch is added.
 
     x : float
-        x-coordinate of the square center.
+        X-coordinate of the square center.
 
     y : float
-        y-coordinate of the square center.
+        Y-coordinate of the square center.
 
     col_face : color
         Face color of the square.
@@ -167,7 +166,6 @@ def _add_square(ax, x, y, col_face):
     Notes
     -----
     - The patch is drawn in ``zorder=2`` (above ``zorder=1``).
-
     """
     ax.add_patch(
         mpl.patches.RegularPolygon(
@@ -184,8 +182,8 @@ def _add_square(ax, x, y, col_face):
 
 
 def _add_circle(ax, x, y, col_face):
-    """Add a filled circle patch to a Matplotlib Axes,
-    centered at the specified coordinates.
+    """
+    Add a filled circle patch to a Matplotlib Axes, centered at the specified coordinates.
 
     Parameters
     ----------
@@ -193,10 +191,10 @@ def _add_circle(ax, x, y, col_face):
         Axes object to which the circle patch is added.
 
     x : float
-        x-coordinate of the circle center.
+        X-coordinate of the circle center.
 
     y : float
-        y-coordinate of the circle center.
+        Y-coordinate of the circle center.
 
     col_face : color
         Face color of the circle.
@@ -204,7 +202,6 @@ def _add_circle(ax, x, y, col_face):
     Notes
     -----
     - The patch is drawn in ``zorder=2`` (above ``zorder=1``).
-
     """
     ax.add_patch(
         mpl.patches.Circle(
@@ -231,7 +228,8 @@ def draw_2_qubit_layer(
     *,
     reverse=False,
 ):
-    """Draw a two-qubit gate layer with sublayer structure on a Matplotlib Axes.
+    """
+    Draw a two-qubit gate layer with sublayer structure on a Matplotlib Axes.
 
     This function visualizes a layer of two-qubit gates, which are arranged horizontally
     according to their assigned sublayer to avoid overlaps.
@@ -278,7 +276,6 @@ def draw_2_qubit_layer(
     Notes
     -----
     - The horizontal position of each gate is ``X + sublayer_index``.
-
     """
     if reverse:
         max_num = max(dict_sublayer.values())
@@ -312,7 +309,8 @@ def draw_1_qubit_layer(
     col_face,
     active_qubits,
 ):
-    """Draw a single-qubit gate layer on selected qubits.
+    """
+    Draw a single-qubit gate layer on selected qubits.
 
     Parameters
     ----------
@@ -342,7 +340,6 @@ def draw_1_qubit_layer(
     Notes
     -----
     - Only qubits listed in ``active_qubits`` are drawn.
-
     """
     for i in range(n_qubits):
         if i in active_qubits:
@@ -360,7 +357,8 @@ def draw_init_product_state(
     *,
     is_right_side=False,
 ):
-    """Draw an initial product state on a circuit diagram.
+    """
+    Draw an initial product state on a circuit diagram.
 
     This function visualizes the initial state of each qubit as a labeled
     circle, optionally placing qubit indices to the left or right.
@@ -387,7 +385,6 @@ def draw_init_product_state(
 
     is_right_side : bool, optional
         Side on which to draw the qubit index labels. Default is left.
-
     """
     for i in range(n_qubits):
         ax.text(X + 2 * is_right_side, i, f"{i + 1}", size=fontsize, **_text_kwargs)
@@ -396,7 +393,8 @@ def draw_init_product_state(
 
 
 def _determine_layout_depth(circ):
-    """Determine the horizontal layout depth required to draw a quantum circuit.
+    """
+    Determine the horizontal layout depth required to draw a quantum circuit.
 
     This function computes the total horizontal space needed to plot a circuit
     diagram, accounting for all gate layers and their internal sublayer
@@ -418,7 +416,6 @@ def _determine_layout_depth(circ):
     - Two-qubit layers are expanded according to their number of sublayers
       (as determined by ``assign_sublayers_per_round``).
     - Fixed offsets are added between layers for readability.
-
     """
     depth = max(gate.round for gate in circ.gates) + 1
 
@@ -464,7 +461,7 @@ def draw_layered_circuit(circ, *, max_depth=np.inf, list_names=None):
     Returns
     -------
     fig : :matplotlib-api:`figure.Figure`
-
+        Figure showing the layered circuit diagram.
     """
     n_qubits = circ.N
     gate_rounds = [gate.round for gate in circ.gates]
@@ -541,15 +538,14 @@ def draw_layered_circuit(circ, *, max_depth=np.inf, list_names=None):
 
 
 def build_reverse_light_cone_circuit(selected_edge, circ):
-    """Construct the reverse light-cone circuit skelleton for a given interaction edge
-    on a circuit constituted by single-qubit rotations and entangling layers
-    for visualization purposes:
+    """
+    Extract the reverse light-cone circuit around a selected two-qubit interaction edge.
+
+    The input circuit must be made of one- and two-qubit gates only (as e.g. QAOA)
 
     .. math::
 
        U_1 U_{\\mathrm{ent}} U_1 U_{\\mathrm{ent}} \\cdots |\\text{initial product state}\\rangle
-
-    e.g. for QAOA: :math:`U_x U_{zz} U_x U_{zz} |+\\rangle`.
 
     This function extracts the light cone of a selected two-qubit
     interaction term (Pauli string with weight 2) from a full circuit and
@@ -581,7 +577,6 @@ def build_reverse_light_cone_circuit(selected_edge, circ):
     - Gate parameters are set to zero when reconstructing the circuit, as the
       function is intended for structural and visualization purposes rather
       than numerical simulation.
-
     """
     n_qubits = circ.N
 
@@ -645,7 +640,8 @@ def build_reverse_light_cone_circuit(selected_edge, circ):
 
 
 def draw_layered_expval(selected_edge, circ, *, list_names=None, commutation=True):
-    """Draw the tensor-network representation of an expectation value
+    """
+    Draw the tensor-network representation of an expectation value.
 
     .. math::
 
@@ -682,7 +678,7 @@ def draw_layered_expval(selected_edge, circ, *, list_names=None, commutation=Tru
     Returns
     -------
     fig : :matplotlib-api:`figure.Figure`
-
+        Figure showing the tensor-network expectation value diagram.
     """
     n_qubits = circ.N
     if len(selected_edge) != 2:

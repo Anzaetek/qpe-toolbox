@@ -26,8 +26,7 @@ from .qft import iqft_swapped
 
 def get_lcu_weights(hamiltonian):
     """
-    Compute the weights for the linear combination of unitaries (LCU) representation
-    of a Hamiltonian, including normalization factor and ancilla register size.
+    Compute the LCU weights, normalization factor, and ancilla register size for a Hamiltonian.
 
     Parameters
     ----------
@@ -45,8 +44,7 @@ def get_lcu_weights(hamiltonian):
         Number of original Hamiltonian terms.
     m_L : int
         Number of qubits required for the auxiliary L-register,
-        i.e., ceil(log2(L)).
-
+        i.e., ``ceil(log2(L))``.
     """
     weights = [abs(P[0]) for P in hamiltonian.terms]
 
@@ -64,7 +62,7 @@ def get_lcu_weights(hamiltonian):
 
 def build_lcu_prepare_state_mps(hamiltonian, *, cutoff=1e-10):
     r"""
-    Construct the normalized MPS representing the L register state :math:`\ket{\mathcal{L}}`
+    Construct the normalized MPS representing the L register state :math:`\ket{\mathcal{L}}`.
 
     .. math::
         \ket{\mathcal{L}} = \sum_\ell \sqrt{\frac{w_\ell}{\lambda}} \ket{\ell}
@@ -80,7 +78,6 @@ def build_lcu_prepare_state_mps(hamiltonian, *, cutoff=1e-10):
     -------
     L_mps : :quimb-api:`MatrixProductState`
         MPS representing the state :math:`\ket{\mathcal{L}}`.
-
     """
     weights, lmb, L, m_L = get_lcu_weights(hamiltonian)
 
@@ -110,7 +107,6 @@ def build_lcu_prepare_mpo(hamiltonian, *, cutoff=1e-10):
     -------
     prep_mpo : :quimb-api:`MatrixProductOperator`
         MPO implementing the PREPARE oracle.
-
     """
     weights, lmb, _, m_L = get_lcu_weights(hamiltonian)
 
@@ -129,17 +125,31 @@ def build_lcu_prepare_mpo(hamiltonian, *, cutoff=1e-10):
     return prep_mpo
 
 
-def _prepare_computational_state(k, n):
-    """Get the MPO for :math:`\\ketbra{k}{0}` where :math:`0 \\leq k < 2^n`"""
-    if not (0 <= k < 2**n):
+def _prepare_computational_state(k, n_qubits):
+    """
+    Get the MPO for :math:`\\ketbra{k}{0}` where :math:`0 \\leq k < 2^n`.
+
+    Parameters
+    ----------
+    k : int
+        Computational basis index, must satisfy ``0 <= k < 2**n``.
+    n_qubits : int
+        Number of qubits.
+
+    Returns
+    -------
+    :quimb-api:`MatrixProductOperator`
+        MPO representing :math:`\\ketbra{k}{0}`.
+    """
+    if not (0 <= k < 2**n_qubits):
         raise ValueError("k must be between 0 and 2**n")
-    bitstring = f"{k:0{n}b}"
+    bitstring = f"{k:0{n_qubits}b}"
     arrays = []
     for idx, ik in enumerate(bitstring):
-        if idx == 0 or idx == n - 1:
+        if idx == 0 or idx == n_qubits - 1:
             aux = np.zeros([1, 2, 2], dtype=complex)  # internal, upper, lower
             aux[0, int(ik), 0] = 1
-        elif idx < n - 1:
+        elif idx < n_qubits - 1:
             aux = np.zeros(
                 [1, 1, 2, 2], dtype=complex
             )  # left internal, right internal, upper, lower
@@ -162,13 +172,12 @@ def lcu_select_gates(hamiltonian):
     Parameters
     ----------
     hamiltonian : Hamiltonian
-        Hamiltonian object from the QPE-Toolbox ``Hamiltonian`` class
+        Hamiltonian object from the QPE-Toolbox ``Hamiltonian`` class.
 
     Returns
     -------
     gates : list of :quimb-api:`Gate`
         Gate sequence implementing the SELECT oracle.
-
     """
     L = len(hamiltonian.terms)
     return list(
@@ -178,8 +187,7 @@ def lcu_select_gates(hamiltonian):
 
 def _gates_llxHl(hamiltonian, l_term):
     r"""
-    Construct gate instructions for controlled :math:`H_\ell`
-    (conditioned on L-register).
+    Construct gate instructions for controlled :math:`H_\ell` (conditioned on L-register).
 
     Parameters
     ----------
@@ -192,7 +200,6 @@ def _gates_llxHl(hamiltonian, l_term):
     -------
     gates : list of :quimb-api:`Gate`
         Gates implementing controlled :math:`H_\ell`.
-
     """
     L = len(hamiltonian.terms)
     if not (0 <= l_term < L):
@@ -230,7 +237,7 @@ def _gates_llxHl(hamiltonian, l_term):
 # MPO representation of SELECT oracle
 def _build_Hl_mpo(hamiltonian, l_term):
     r"""
-    Build MPO for the l-th Pauli string of a Hamiltonian
+    Build MPO for the l-th Pauli string of a Hamiltonian.
 
     Parameters
     ----------
@@ -243,7 +250,6 @@ def _build_Hl_mpo(hamiltonian, l_term):
     -------
     Hl_mpo : :quimb-api:`MatrixProductOperator`
         MPO representing the l-th term of the Hamiltonian.
-
     """
     if l_term >= len(hamiltonian.terms):
         return qtn.MPO_identity(hamiltonian.n_qubits)
@@ -275,8 +281,7 @@ def _build_Hl_mpo(hamiltonian, l_term):
 
 def _build_llxHl_mpo(hamiltonian, l_term):
     r"""
-    Construct the MPO for :math:`\ket{\ell}\bra{\ell} \otimes H_\ell`,
-    used in the SELECT oracle.
+    Construct the MPO for :math:`\ket{\ell}\bra{\ell} \otimes H_\ell` used in the SELECT oracle.
 
     Parameters
     ----------
@@ -289,7 +294,6 @@ def _build_llxHl_mpo(hamiltonian, l_term):
     -------
     llxHl_mpo : :quimb-api:`MatrixProductOperator`
         MPO representing :math:`\ket{\ell}\bra{\ell} \otimes H_\ell`.
-
     """
     m_L = int(np.ceil(np.log2(len(hamiltonian.terms))))
     l_mps = qtn.MPS_computational_state(f"{{0:0{m_L}b}}".format(l_term))
@@ -315,7 +319,6 @@ def build_lcu_select_mpo(hamiltonian, *, cutoff=1e-10):
     -------
     select_mpo : :quimb-api:`MatrixProductOperator`
         MPO implementing :math:`SELECT = \sum_\ell \ket{\ell}\bra{\ell} \otimes H_\ell`.
-
     """
     L = len(hamiltonian.terms)
     m_L = int(np.ceil(np.log2(L)))
@@ -351,8 +354,7 @@ def build_lcu_reflection_mpo(hamiltonian, *, cutoff=1e-10):
     Returns
     -------
     R_L : :quimb-api:`MatrixProductOperator`
-        MPO representing the reflection
-
+        MPO representing the reflection.
     """
     L_mps = build_lcu_prepare_state_mps(hamiltonian)
     m_L = L_mps.L
@@ -399,7 +401,6 @@ def run_qpe_lcu_walk_operator(
         Contains timing information: {'ctimes': [...]}.
     theta : float
         Estimated phase from the walk operator.
-
     """
     st = time.time()
     ctimes = []
@@ -447,8 +448,7 @@ def qpe_first_stage_walk(
     H, psi0_mps, m_ph, regs, *, max_bond=0, cutoff=1e-10, verbosity=0
 ):
     """
-    LCU and first stage of QPE using walk operator: apply Hadamard wall
-    and controlled-W sequence.
+    LCU first stage of QPE: apply Hadamard wall and controlled-W sequence.
 
     Parameters
     ----------
@@ -473,7 +473,6 @@ def qpe_first_stage_walk(
         Contains timing information: {'ctimes': [...]}.
     circ : :quimb-api:`CircuitMPS`
         Circuit representing the applied QPE first stage.
-
     """
     st = time.time()
     traces = {"ctimes": []}
@@ -521,8 +520,7 @@ def qpe_first_stage_walk(
 
 def _get_registers_qpe_lcu(n_qubits, m_L, m_ph):
     """
-    Return dictionary of qubit registers for the phase, L,
-    and physical registers in LCU QPE.
+    Return dictionary of qubit registers for the phase, L, and physical registers in LCU QPE.
 
     Parameters
     ----------
@@ -537,7 +535,6 @@ def _get_registers_qpe_lcu(n_qubits, m_L, m_ph):
     -------
     regs : dict
         Dictionary with keys 'phase', 'L', 'phys' giving tuples of qubit indices.
-
     """
     regs = {}
     regs["phase"] = tuple(range(m_ph))
@@ -564,7 +561,6 @@ def get_energy_from_lcu_walk_phase(theta, lmb):
     -------
     energy : float
         Estimated energy.
-
     """
     return lmb * np.cos(2 * np.pi * theta)
 
@@ -586,6 +582,5 @@ def estimate_lcu_error(m_ph, E0, lmb):
     -------
     delta_E : float
         Estimated upper bound on the energy error.
-
     """
     return lmb * np.sqrt(1 - (E0 / lmb) ** 2) * 2 * np.pi / 2**m_ph

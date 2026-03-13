@@ -47,7 +47,6 @@ def build_hadamard_test_circuit(init_mps, U_gate, theta):
     -------
     circ : :quimb-api:`CircuitMPS`
         Circuit implementing the Hadamard test.
-
     """
     n_qubits = init_mps.L
     circ = make_circMPS(n_phase_bits=1, psi_mps=init_mps)
@@ -71,10 +70,9 @@ def build_hadamard_test_circuit(init_mps, U_gate, theta):
     return circ
 
 
-def run_hadamard_test(init_mps, U_gate, theta, n_shots, *, seed=42):
+def run_hadamard_test(init_mps, U_gate, theta, n_shots, *, seed=None):
     r"""
-    Run the Hadamard test circuit and estimate the expectation value
-    :math:`Z(\theta)`.
+    Run the Hadamard test circuit and estimate the expectation value :math:`Z(\theta)`.
 
     The returned value is
 
@@ -98,12 +96,13 @@ def run_hadamard_test(init_mps, U_gate, theta, n_shots, *, seed=42):
     n_shots : int or qpe_toolbox.EXACT
         Number of measurement shots. If ``EXACT``, probabilities are computed exactly,
         else probabilities are estimated by sampling.
+    seed : None or int, optional
+        A random seed, passed to ``numpy.random.seed`` if given.
 
     Returns
     -------
     Z : float
         Estimated value of :math:`Z(\theta) = P(0) - P(1)`.
-
     """
     circ = build_hadamard_test_circuit(init_mps, U_gate, theta)
     aux_ind = 0
