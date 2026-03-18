@@ -25,7 +25,6 @@ readme = "README.md"
 requires-python = ">=3.12"
 classifiers = [
   "Intended Audience :: Science/Research",
-  "License :: OSI Approved :: Apache Software License",
   "Operating System :: MacOS",
   "Operating System :: POSIX",
   "Operating System :: Unix",
@@ -34,11 +33,10 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Physics",
   "Topic :: Scientific/Engineering :: Quantum Computing",
 ]
+license = "Apache-2.0"
 license-files = ["LICENSE.txt"]
 dependencies = [
   "jax>=0.8.1",
-  "jupyter>=1.1.1",
-  "jupytext>=1.18.1",
   "numpy>=2.0.0",
   "openfermion>=1.0.0",
   "kahypar>=1.3.5",
@@ -48,11 +46,9 @@ dependencies = [
   "scipy>=1.16.3,!=1.17.0",
   "cmaes>=0.12.0",
   "qiskit>=2.3.0",
-  "qiskit-quimb>=0.0.9",
-  "pylatexenc>=2.10",
-  "qiskit-aer>=0.17.2",
   "autoray>=0.8.4",
   "cotengra>=0.7.5",
+  "matplotlib>=3.10.8",
 ]
 
   [project.urls]
@@ -61,8 +57,7 @@ dependencies = [
   Issues = "https://github.com/quobly-sw/qpe-toolbox/issues"
 
 [dependency-groups]
-# add jupytext in dev to install it in CI without the heavy project dependencies
-dev = ["jupytext>=1.18.1"]
+jupytext = ["jupytext>=1.18.1"]  # used in format hook
 docs = [
   "furo>=2024.6.29",
   "myst-nb>=1.3.0",
@@ -70,9 +65,23 @@ docs = [
   "sphinx-copybutton>=0.5.2",
   "sphinx-design>=0.6.1",
   "sphinx>=8",
+  {include-group = "jupytext"},
+]
+examples = [
+  "jupyter>=1.1.1",
+  "pylatexenc>=2.10",
+  "qiskit-aer>=0.17.2",
+  "qiskit-quimb>=0.0.9",
+  {include-group = "jupytext"},
 ]
 lint = ["pre-commit>=4.3.0", "ruff>=0.14.10"]
-test = ["pytest>=9.0.0", "pytest-cov>=7.0.0", "pytest-xdist>=3.8"]
+test = ["pytest>=9.0.0", "pytest-cov>=7.0.0", "pytest-xdist>=3.8", "qiskit-aer"]
+dev = [
+    {include-group = "docs"},
+    {include-group = "examples"},
+    {include-group = "lint"},
+    {include-group = "test"},
+]
 
 [build-system]
 requires = ["hatchling >= 1.26"]
